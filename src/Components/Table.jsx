@@ -41,5 +41,3 @@ export const Th = styled.th`
     vertical-align: middle;
     border-bottom: 1px solid ${(props) => props.theme.color};
 `;
-
-// text-align: inherit

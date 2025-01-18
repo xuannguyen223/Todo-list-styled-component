@@ -6,4 +6,5 @@ export const ToDoListDarkTheme = {
   hoverTextColor: "#343a40",
   hoverBgColor: "#fff",
   borderColor: "#343a40",
+  ToDoListDarkTheme: true,
 };

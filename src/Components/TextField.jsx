@@ -8,6 +8,8 @@ const Input = styled.input`
   height: 35px;
   font-size: 17px;
   display: initial;
+  color: ${(props) =>
+    props.theme.ToDoListDarkTheme ? "black" : props.theme.color}};
 `;
 
 const Label = styled.span`
