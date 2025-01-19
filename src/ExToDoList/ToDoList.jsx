@@ -2,16 +2,7 @@ import React, { useState } from "react";
 import { ThemeProvider } from "styled-components";
 import { Container } from "../Components/Container";
 import { Dropdown } from "../Components/Dropdown";
-import { ToDoListPrimaryTheme } from "../Themes/ToDoListPrimaryTheme";
-import { ToDoListDarkTheme } from "../Themes/ToDoListDarkTheme";
-import { ToDoListLightTheme } from "../Themes/ToDoListLightTheme";
-import {
-  Heading1,
-  Heading2,
-  Heading3,
-  Heading4,
-  Heading5,
-} from "../Components/Heading";
+import { Heading3 } from "../Components/Heading";
 import { TextField } from "../Components/TextField";
 import { Button } from "../Components/Button";
 import { FaPlus, FaRegEdit, FaCheck } from "react-icons/fa";
@@ -19,7 +10,14 @@ import { FaUpload } from "react-icons/fa6";
 import { IoTrashSharp } from "react-icons/io5";
 import { Table, Thead, Tr, Th } from "../Components/Table";
 import { useDispatch, useSelector } from "react-redux";
-import { handleAddTask, handleTheme } from "../Redux/Reducers/ToDoListReducer";
+import {
+  handleAddTask,
+  handleDeletetTask,
+  handleDoneTask,
+  handleEditTask,
+  handleTheme,
+  handleUpdateTask,
+} from "../Redux/Reducers/ToDoListReducer";
 
 const ToDoList = () => {
   const selectedTheme = useSelector(
@@ -29,10 +27,10 @@ const ToDoList = () => {
   const dispatch = useDispatch();
 
   const arrTask = useSelector((state) => state.ToDoListReducer.taskList);
-  console.log("arrTask: ", arrTask);
 
   const [inputTask, setInputTask] = useState("");
-  // console.log("inputTask: ", inputTask);
+
+  const taskEdit = useSelector((state) => state.ToDoListReducer.taskEdit);
 
   return (
     <>
@@ -40,7 +38,6 @@ const ToDoList = () => {
         <Container className="w-1/2">
           <Dropdown
             onChange={(e) => {
-              console.log(e.target.value);
               dispatch(handleTheme(e.target.value));
             }}
           >
@@ -50,27 +47,43 @@ const ToDoList = () => {
           </Dropdown>
           <Heading3 className="py-5">To Do List</Heading3>
           <TextField
+            key={taskEdit?.id}
             label={"Task Name"}
             onChange={(e) => {
               setInputTask(e.target.value);
             }}
+            defaultValue={taskEdit?.taskName}
           />
           <Button
             className="ml-2"
             onClick={() => {
-              console.log("hello");
+              if (taskEdit) {
+                alert(
+                  "You are editing an existing task. Please choose 'Update Task' !"
+                );
+                return;
+              }
               const payload = {
                 id: Date.now(),
                 taskName: inputTask,
                 done: false,
               };
-              console.log("payload: ", payload);
               dispatch(handleAddTask(payload));
             }}
           >
             <FaPlus className="inline-block -mt-1" /> Add Task
           </Button>
-          <Button className="ml-2">
+          <Button
+            className="ml-2"
+            onClick={() => {
+              const payload = {
+                ...taskEdit,
+                taskName: inputTask,
+              };
+              dispatch(handleUpdateTask(payload));
+              dispatch(handleEditTask());
+            }}
+          >
             <FaUpload className="inline-block -mt-1" /> Update Task
           </Button>
           <hr className="my-5" />
@@ -84,13 +97,25 @@ const ToDoList = () => {
                     <Tr key={index}>
                       <Th className="text-left">{task.taskName}</Th>
                       <Th className="text-right">
-                        <Button>
+                        <Button
+                          onClick={() => {
+                            dispatch(handleEditTask(task));
+                          }}
+                        >
                           <FaRegEdit />
                         </Button>
-                        <Button>
+                        <Button
+                          onClick={() => {
+                            dispatch(handleDoneTask(task.taskName));
+                          }}
+                        >
                           <FaCheck />
                         </Button>
-                        <Button>
+                        <Button
+                          onClick={() => {
+                            dispatch(handleDeletetTask(task.taskName));
+                          }}
+                        >
                           <IoTrashSharp />
                         </Button>
                       </Th>
@@ -109,7 +134,11 @@ const ToDoList = () => {
                     <Tr key={index}>
                       <Th className="text-left">{task.taskName}</Th>
                       <Th className="text-right">
-                        <Button>
+                        <Button
+                          onClick={() => {
+                            dispatch(handleDeletetTask(task.taskName));
+                          }}
+                        >
                           <IoTrashSharp />
                         </Button>
                       </Th>

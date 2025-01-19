@@ -11,6 +11,7 @@ const initialState = {
     { id: "task-3", taskName: "task 3", done: true },
     { id: "task-4", taskName: "task 4", done: false },
   ],
+  taskEdit: null,
 };
 
 const chooseThemeByName = (themeName) => {
@@ -46,10 +47,43 @@ const ToDoListReducer = createSlice({
         state.taskList.push(action.payload);
       }
     },
+    handleDoneTask(state, action) {
+      let indexDoneTask = state.taskList.findIndex(
+        (task) => task.taskName.toLowerCase() === action.payload.toLowerCase()
+      );
+      state.taskList[indexDoneTask] = {
+        ...state.taskList[indexDoneTask],
+        done: true,
+      };
+    },
+    handleDeletetTask(state, action) {
+      let indexRemove = state.taskList.findIndex(
+        (task) => task.taskName.toLowerCase() === action.payload.toLowerCase()
+      );
+      state.taskList.splice(indexRemove, 1);
+    },
+    handleEditTask(state, action) {
+      state.taskEdit = action.payload;
+    },
+    handleUpdateTask(state, action) {
+      let indexUpdate = state.taskList.findIndex(
+        (task) => task.id === action.payload.id
+      );
+      state.taskList[indexUpdate] = {
+        ...state.taskList[indexUpdate],
+        taskName: action.payload.taskName,
+      };
+    },
   },
 });
 
-export const { handleTheme, handleAddTask } = ToDoListReducer.actions;
+export const {
+  handleTheme,
+  handleAddTask,
+  handleDoneTask,
+  handleDeletetTask,
+  handleEditTask,
+  handleUpdateTask,
+} = ToDoListReducer.actions;
 
-// export default ToDoListReducer;
 export default ToDoListReducer.reducer;
